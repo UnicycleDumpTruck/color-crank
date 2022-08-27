@@ -6,15 +6,16 @@ and the LEDs respond depending on how their pushbutton and toggles are set.
 import board
 import busio
 from digitalio import Direction, Pull
-from adafruit_mcp23017 import MCP23017
+from adafruit_mcp230XX.mcp23017 import MCP23017
 from adafruit_debouncer import Debouncer
+import neopixel
 
-i2c = busio.I2C(board.SCL, board.SDA)
-mcp = MCP23017(i2c)
+#i2c = busio.I2C(board.SCL, board.SDA)
+mcp = MCP23017(board.I2C())
 
 class ColorPath():
     """Group of three switches, one illum pushbutton, one LED strip."""
-    def __init__(self, sw1_pin: int, sw2_pin: int, sw3_pin: int, ipb_pin: int, led_pin, num_pixels: int):
+    def __init__(self, sw1_pin: int, sw2_pin: int, sw3_pin: int, ipb_pin: int, ipb_lamp_pin: int, led_pin, num_pixels: int):
         sw1_pin = mcp.get_pin(sw1_pin)
         sw2_pin = mcp.get_pin(sw2_pin)
         sw3_pin = mcp.get_pin(sw3_pin)
@@ -34,17 +35,18 @@ class ColorPath():
 
         self.ipb_lamp = mcp.get_pin(ipb_lamp_pin)
         self.ipb_lamp.direction = Direction.OUTPUT
-        self.ipb_lamp.value = False
+        self.ipb_lamp.value = True
 
-        self.active = False
-
+        self.active = True
+        
+        self.num_pixels = num_pixels
         self.strip = neopixel.NeoPixel(
             led_pin, num_pixels, brightness=255, auto_write=True, pixel_order=neopixel.GRB
         )
         
-        self.strip.fill((32,0,0))
-        self.twin = [(index, (0,0,0) for index in range(num_pixels)]
-
+        self.strip.fill((64,0,0))
+        self.twin = [(0,0,0) for index in range(num_pixels)]
+        print(self.twin)
     def update(self):
         self.sw_red.update()
         self.sw_green.update()
@@ -59,6 +61,7 @@ class ColorPath():
             self.ipb_lamp.value = True
 
     def change(self, amount: int):
+        # print(f"Changing path by {amount}")
         if not self.active:
             return None
         color = (
@@ -68,9 +71,12 @@ class ColorPath():
             )
         if amount > 0:
             rng = range(0, self.num_pixels)
+            print("Positive Change")
         else:
-            rng = range(self.num_pixels, -1, -1)
-        for i in range(self.num_pixels):
+            rng = range(self.num_pixels - 1, -1, -1)
+            print("Negative Change")
+        for i in rng:
+            print(f"i:{i}")
             if self.twin[i] == color:
                 continue    
             else:

@@ -21,10 +21,10 @@ sound_trigger_pin.direction = dio.Direction.OUTPUT
 sound_trigger_pin.drive_mode = dio.DriveMode.OPEN_DRAIN
 sound_trigger_pin.value = True
 
-PX_PER_STRIP = 24
+PX_PER_STRIP = 25
 
 handwheel = Knob(seesaw.Seesaw(board.I2C(), addr=0x36))
-cpath_a = ColorPath(0,1,2,3,4, board.25, PX_PER_STRIP)
+cpath_a = ColorPath(0,1,2,3,4, board.A1, PX_PER_STRIP)
 
 print("Boot complete, starting loop...")
 
@@ -36,5 +36,5 @@ while True:
     cpath_a.update()
     
     wheel_change = handwheel.update()
-
-    cpath_a.change(wheel_change)
+    if wheel_change is not None:
+        cpath_a.change(wheel_change)
