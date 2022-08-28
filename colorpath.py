@@ -2,7 +2,8 @@
 switch, and a NeoPixel strip. ColorPaths are fed hand wheel position chnages
 and the LEDs respond depending on how their pushbutton and toggles are set.
 """
-from time import sleep
+from time import sleep, monotonic
+from random import randint
 import board
 import busio
 from digitalio import Direction, Pull
@@ -19,6 +20,9 @@ import neopixel
 
 #i2c = busio.I2C(board.SCL, board.SDA)
 mcp = MCP23017(board.I2C())
+
+MAX_BRIGHT = 8 # maximum brightness
+sys_stability = [0, 10] # Time in seconds before random decay of LED pattern
 
 class ColorPath():
     """Group of three switches, one illum pushbutton, one LED strip."""
@@ -52,6 +56,8 @@ class ColorPath():
         )
         
         self.twin = [(0,0,0) for index in range(num_pixels)]
+        self.last_change = monotonic()
+        self.stability = randint(*sys_stability)
         print(self)
     def update(self):
         self.sw_red.update()
@@ -65,10 +71,30 @@ class ColorPath():
         elif self.ipb.fell and not self.active:
             self.active = True
             self.ipb_lamp.value = True
-
+        if monotonic() - self.last_change > self.stability:
+            bad_px = randint(0,self.num_pixels-1)
+            
+            bad_color = (randint(0,MAX_BRIGHT),randint(0,MAX_BRIGHT),randint(0,MAX_BRIGHT))
+            # print(f"bad_px:{bad_px}, bad_color:{bad_color}")
+            self.twin[bad_px] = bad_color
+            self.strip[bad_px] = bad_color
+            self.last_change = monotonic()
+            self.stability = randint(*sys_stability)
+    def inc_stability(self):
+        # print('Incrementing stability')
+        sys_stability[1] += 1
+    def dec_stability(self):
+        # print('Decrementing stability')
+        sys_stability[1] -= 1
+        sys_stability[1] = max(0,sys_stability[1])
     def change(self, amount: int):
         if not self.active:
             return None
+        if self.ipb.value == False:
+            if amount > 0:
+                self.inc_stability()
+            else:
+                self.dec_stability()
         color = (
             8 if self.sw_red.value else 0,
             8 if self.sw_green.value else 0,
@@ -85,6 +111,7 @@ class ColorPath():
                 self.twin[i] = color
                 self.strip[i] = color
                 break
+        self.last_change = monotonic()
         # sound.play(b'T00     OGG')
         # print(f"{self}")
 

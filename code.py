@@ -49,7 +49,7 @@ while True:
     wheel_change = handwheel.update()
     
     if wheel_change is not None:
-        sound.play(b'a_beep     wav')
+        sound.play_now(b'T01     OGG')
         cpath_a.change(wheel_change)
         cpath_b.change(wheel_change)
         cpath_c.change(wheel_change)
