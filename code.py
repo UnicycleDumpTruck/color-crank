@@ -26,7 +26,7 @@ from colorpath import ColorPath
 
 
 sound = Soundboard('TX', 'RX', 'D4', debug = True)
-
+print(sound.files)
 sound.play(b'T00     OGG')
 
 
