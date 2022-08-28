@@ -89,12 +89,13 @@ class ColorPath():
         sys_stability[1] = max(0,sys_stability[1])
     def change(self, amount: int):
         if not self.active:
-            return None
+            return False
         if self.ipb.value == False:
             if amount > 0:
                 self.inc_stability()
             else:
                 self.dec_stability()
+        change_occured = False
         color = (
             8 if self.sw_red.value else 0,
             8 if self.sw_green.value else 0,
@@ -110,10 +111,11 @@ class ColorPath():
             else:
                 self.twin[i] = color
                 self.strip[i] = color
+                change_occured = True
                 break
         self.last_change = monotonic()
-        # sound.play(b'T00     OGG')
-        # print(f"{self}")
+        print(f'returning {change_occured}')
+        return change_occured
 
     def __repr__(self):
         output = ''

@@ -49,7 +49,13 @@ while True:
     wheel_change = handwheel.update()
     
     if wheel_change is not None:
-        sound.play_now(b'T01     OGG')
-        cpath_a.change(wheel_change)
-        cpath_b.change(wheel_change)
-        cpath_c.change(wheel_change)
+        if any([
+            cpath_a.change(wheel_change),
+            cpath_b.change(wheel_change),
+            cpath_c.change(wheel_change),
+            ]):
+                if wheel_change > 0:
+                    sound.play_now(b'T03     OGG')
+                else:
+                    sound.play_now(b'T02     OGG')
+
