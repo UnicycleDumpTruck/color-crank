@@ -2,13 +2,20 @@
 switch, and a NeoPixel strip. ColorPaths are fed hand wheel position chnages
 and the LEDs respond depending on how their pushbutton and toggles are set.
 """
-
+from time import sleep
 import board
 import busio
 from digitalio import Direction, Pull
 from adafruit_mcp230XX.mcp23017 import MCP23017
 from adafruit_debouncer import Debouncer
 import neopixel
+# from adafruit_soundboard import Soundboard
+
+#sleep(2)
+#sound = Soundboard('TX', 'RX', 'D4', debug=True)
+
+#sound.play(b'T00     OGG')
+#print(f"Soundboard files: {sound.files}")
 
 #i2c = busio.I2C(board.SCL, board.SDA)
 mcp = MCP23017(board.I2C())
@@ -78,7 +85,8 @@ class ColorPath():
                 self.twin[i] = color
                 self.strip[i] = color
                 break
-        print(f"{self}")
+        # sound.play(b'T00     OGG')
+        # print(f"{self}")
 
     def __repr__(self):
         output = ''

@@ -3,6 +3,9 @@ from random import choice
 from time import sleep
 import board
 from adafruit_seesaw import seesaw #, rotaryio
+from adafruit_soundboard import Soundboard
+
+
 #from adafruit_seesaw import digitalio as sdio
 #import neopixel
 #import digitalio as dio
@@ -20,6 +23,13 @@ from colorpath import ColorPath
 #sound_trigger_pin.direction = dio.Direction.OUTPUT
 #sound_trigger_pin.drive_mode = dio.DriveMode.OPEN_DRAIN
 #sound_trigger_pin.value = True
+
+
+sound = Soundboard('TX', 'RX', 'D4', debug = True)
+
+sound.play(b'T00     OGG')
+
+
 
 PX_PER_STRIP = 25
 
@@ -39,6 +49,7 @@ while True:
     wheel_change = handwheel.update()
     
     if wheel_change is not None:
+        sound.play(b'T00     OGG')
         cpath_a.change(wheel_change)
         cpath_b.change(wheel_change)
         cpath_c.change(wheel_change)
