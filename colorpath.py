@@ -44,9 +44,8 @@ class ColorPath():
             led_pin, num_pixels, brightness=255, auto_write=True, pixel_order=neopixel.GRB
         )
         
-        self.strip.fill((64,0,0))
         self.twin = [(0,0,0) for index in range(num_pixels)]
-        print(self.twin)
+        print(self)
     def update(self):
         self.sw_red.update()
         self.sw_green.update()
@@ -61,26 +60,31 @@ class ColorPath():
             self.ipb_lamp.value = True
 
     def change(self, amount: int):
-        # print(f"Changing path by {amount}")
         if not self.active:
             return None
         color = (
-            32 if self.sw_red.value else 0,
-            32 if self.sw_green.value else 0,
-            32 if self.sw_blue.value else 0,
+            8 if self.sw_red.value else 0,
+            8 if self.sw_green.value else 0,
+            8 if self.sw_blue.value else 0,
             )
         if amount > 0:
             rng = range(0, self.num_pixels)
-            print("Positive Change")
         else:
             rng = range(self.num_pixels - 1, -1, -1)
-            print("Negative Change")
         for i in rng:
-            print(f"i:{i}")
             if self.twin[i] == color:
                 continue    
             else:
                 self.twin[i] = color
                 self.strip[i] = color
                 break
-        print(f"{self.twin}")
+        print(f"{self}")
+
+    def __repr__(self):
+        output = ''
+        for pixel in self.twin:
+            output += 'x' if pixel[0] else '_'
+            output += 'x' if pixel[1] else '_'
+            output += 'x' if pixel[2] else '_'
+            output += '|'
+        return output
