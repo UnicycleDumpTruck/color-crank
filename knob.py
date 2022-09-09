@@ -1,7 +1,7 @@
 from adafruit_seesaw import seesaw, rotaryio
 #from adafruit_seesaw import digitalio as sdio
 
-RESOLUTION = 1  # Only change on every nth position.
+RESOLUTION = 40  # Only change on every nth position.
 
 class Knob():
     def __init__(self, seesaw):
